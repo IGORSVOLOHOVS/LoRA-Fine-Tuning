@@ -1,0 +1,32 @@
+# Hyperparameters for Cheburashka LoRA training
+# Legacy Configuration for Cheburashka LoRA Training
+model:
+  pretrained_model_name_or_path: "runwayml/stable-diffusion-v1-5" # Stable diffusion v1.5 is the base; 512x512 native.
+  revision: null
+
+training:
+  learning_rate: 2.0e-05  # A very cautious learning rate. Safe, but v2 uses 1e-4 because it converges significantly faster for single-object concepts.
+  max_train_steps: 1000   # 1000 steps is standard for small conceptual LoRAs; avoids catastrophic forgetting of the base model.
+  train_batch_size: 1      # Minimal batch size to reduce noise and allow the model to focus on individual images in the tiny dataset.
+  max_grad_norm: 1.0       # Standard clipping; ensures stability in the complex multi-step diffusion process.
+  lr_scheduler: "constant" # Prevents the learning power from fading out before the 3-image concept is learned.
+  lr_warmup_steps: 0       # Not needed for constant LR on small datasets.
+  snr_gamma: 5.0           # SNR Gamma (5.0) prevents the model from being distracted by early-stage diffusion noise.
+  lora_rank: 128           # High rank (128) is essential to capture the complex textures of plush toys like Cheburashka.
+  checkpointing_steps: 500 # Mid-way checkpoint for evaluation.
+  seed: 42                 # Seed 42 is the baseline for measurable research and tuning.
+  gradient_accumulation_steps: 1
+
+data:
+  instance_data_dir: "./data/cheburashka"
+  instance_prompt: "<cheburashka> plushie" # Unique trigger token to inject our concept into the CLIP embedding space.
+  resolution: 512          # Fixed 512x512; trying 1024 on SD v1.5 weights leads to blurry duplication errors.
+  center_crop: true        # Ensures Cheburashka is the main focus, regardless of original image shapes.
+
+inference:
+  guidance_scale: 7.5      # CFG scale 7.5 is the standard equilibrium. High (>12) scale causes color over-saturation and 'crunchy' edges.
+  num_inference_steps: 30  # DDPM/PNDM schedulers require ~30 steps to converge on high-quality samples; <20 steps often results in muddy artifacts.
+
+output:
+  output_dir: "./checkpoints"
+  results_dir: "./results"

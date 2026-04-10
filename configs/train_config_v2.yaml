@@ -1,0 +1,31 @@
+# Configuration for Cheburashka LoRA Training
+model:
+  pretrained_model_name_or_path: "runwayml/stable-diffusion-v1-5" # SD v1.5 is chosen for its widespread LoRA compatibility and reasonable VRAM requirements compared to SDXL.
+  revision: null
+
+training:
+  learning_rate: 1.0e-04  # 1e-4 is the 'Goldilocks' zone for LoRA. 1e-3 causes immediate divergence/burn, while 1e-5 is too slow for 1000 steps with only 3 images.
+  max_train_steps: 1000   # For a 3-image dataset, 1000 steps (~333 epochs) is the proven sweet spot to learn a character without deep-frying the weights.
+  train_batch_size: 1      # Fixed at 1 to maximize precision per image and keep VRAM usage under 8-10GB.
+  max_grad_norm: 1.0       # Standard clipping to prevent exploding gradients, which are common in diffusion training loops.
+  lr_scheduler: "constant" # Constant LR is preferred for tiny datasets; decay schedulers (cosine) would reduce learning capacity before the concept is fully 'baked'.
+  lr_warmup_steps: 0       # Warmup is not needed when starting with a stable 1e-4 constant rate on a tiny dataset.
+  snr_gamma: 5.0           # Min-SNR weighting strategy (value 5.0). Proven to stabilize training by reducing loss contribution from high-frequency noise steps.
+  lora_rank: 128           # Rank 128 (high capacity) is necessary for high-fidelity character likeness. Ranks < 32 are better for styles but leak character details.
+  checkpointing_steps: 500 # Saves at 500 and 1000; provides a fallback if the 1000-step version is slightly overfitted.
+  seed: 42                 # Fixed seed 42 ensures that noise patterns are identical between runs, making hyperparameter tuning (like changing LR) measurable.
+  gradient_accumulation_steps: 1 # Direct updates are faster and cleaner for batch size 1.
+
+data:
+  instance_data_dir: "./data/cheburashka"
+  instance_prompt: "<cheburashka> plushie" # '<cheburashka>' is our trigger. Brackets are used to make the token unique in the CLIP vocabulary.
+  resolution: 512          # SD v1.5 is natively 512x512. Training at higher resolutions (e.g. 1024) leads to subject replication artifacts (duplicate eyes/limbs).
+  center_crop: true        # Required to keep Cheburashka in the 512x512 frame accurately, as the raw images may have different aspect ratios.
+
+inference:
+  guidance_scale: 7.5      # CFG scale 7.5 is the standard equilibrium. High (>12) scale causes color over-saturation and 'crunchy' edges.
+  num_inference_steps: 30  # DDPM/PNDM schedulers require ~30 steps to converge on high-quality samples; <20 steps often results in muddy artifacts.
+
+output:
+  output_dir: "./checkpoints_v2"
+  results_dir: "./results_v2"

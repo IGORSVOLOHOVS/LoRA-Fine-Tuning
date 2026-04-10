@@ -1,0 +1,30 @@
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data & Models (Large files)
+data/
+models/
+checkpoints/
+checkpoints_v2/
+*.pt
+*.bin
+*.ckpt
+*.safetensors
+
+# Results
+!README_assets/ # Allow if we ever move readme images here
+
+# Jupyter
+.ipynb_checkpoints
+
+# OS files
+.DS_Store
+Thumbs.db
