@@ -28,3 +28,4 @@ checkpoints_v2/
 # OS files
 .DS_Store
 Thumbs.db
+.env
