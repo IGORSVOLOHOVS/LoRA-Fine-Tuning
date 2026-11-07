@@ -1,15 +1,33 @@
-# Virtual environment
-.venv/
+# Built, fetched and scratch - only ever at the root
+/dist/
+/build/
+/out/
+/tmp/
+/.venv/
+/.coverage
+
+# What the tools cache, wherever they run
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Prompt text, and one person's Claude Code settings
+.claude/logs/
+.claude/settings.local.json
+
+# No .env line: .claude/.env holds the keys and is committed on purpose (R-02).
+# DEVIATION from the line above, decided by the repository owner: no key is
+# ever committed, so .claude/.env is ignored here. Rule 4 of CLAUDE.md is
+# where that reversal is written down.
+.claude/.env
+
+# What this repository writes, kept from before the lab
 env/
 venv/
 ENV/
-
-# Python cache
-__pycache__/
-*.py[cod]
 *$py.class
-
-# Data & Models (Large files)
 data/
 models/
 checkpoints/
@@ -18,14 +36,7 @@ checkpoints_v2/
 *.bin
 *.ckpt
 *.safetensors
-
-# Results
-!README_assets/ # Allow if we ever move readme images here
-
-# Jupyter
-.ipynb_checkpoints
-
-# OS files
+.ipynb_checkpoints/
 .DS_Store
 Thumbs.db
 .env
