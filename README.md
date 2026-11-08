@@ -1,67 +1,74 @@
-# Cheburashka LoRA Fine-Tuning
+# lo-ra-fine-tuning
 
-This project demonstrates how to fine-tune a Stable Diffusion v1.5 model using Low-Rank Adaptation (LoRA) to learn a new concept: **Cheburashka**.
-
-## Overview
-
-Stable Diffusion is a powerful text-to-image model, but it lacks knowledge of specific or niche concepts like "Cheburashka" (a famous Russian character). By fine-tuning using LoRA, we can teach the model this new concept with minimal computational resources and a very small dataset (just 3 images).
-
-## Project Structure
-
-```
-project_root/
-├── data/               # Training images
-├── models/             # Architecture definitions
-├── utils/              # Helper functions & logging
-├── checkpoints/        # Saved LoRA weights
-├── results/            # Generated samples
-├── docs/               # Documentation & diagrams
-├── config.yaml         # Hyperparameters
-├── dataset.py          # Custom Dataset class
-├── train.py            # Training pipeline
-├── inference.py        # Generation script
-├── notebook.ipynb      # Unified execution notebook
-└── README.md           # This file
-```
-
-## Requirements
-
-- Python 3.8+
-- PyTorch with CUDA support
-- `diffusers`
-- `transformers`
-- `peft`
-- `accelerate`
-
-## Workflow
-
-1. **Stage 1**: Demonstrate the base model's failure to generate Cheburashka.
-2. **Stage 2**: Fine-tune the UNet using LoRA on the Cheburashka dataset.
-3. **Stage 3**: Generate new images using the learned concept.
+Fine-tuning Stable Diffusion v1.5 with Low-Rank Adaptation (LoRA) to learn one
+new concept, **Cheburashka**, from a dataset of three images. The base model has
+never seen the character; after 1000 training steps on the UNet's LoRA adapters it
+draws it on request.
 
 ## Results
 
-By fine-tuning for 1000 steps, the model successfully learns the "Cheburashka" concept, which is absent in the base Stable Diffusion v1.5 model.
-
-### Base Model vs. LoRA Fine-Tuned
-| Base Model (Stage 1) | LoRA Fine-Tuned (Stage 3) |
+| Base model (stage 1) | LoRA fine-tuned (stage 3) |
 |:---:|:---:|
-| ![Base Model Failure](results/stage1_raw_model.png) | ![LoRA Success](results/generation_0.png) |
-| *Prompt: "<cheburashka> with the Eiffel Tower in the background"* | *Prompt: "<cheburashka> with the Eiffel Tower in the background"* |
+| ![Base model failure](results/stage1_raw_model.png) | ![LoRA success](results/generation_0.png) |
+| *Prompt: "&lt;cheburashka&gt; with the Eiffel Tower in the background"* | *Same prompt* |
 
-### More Examples (Stage 3)
-| Cheburashka Riding Bicycle |
+| Cheburashka riding a bicycle |
 |:---:|
 | ![Bicycle](results/generation_3.png) |
 
-## Usage
+`results/` holds the run with `configs/train_config.yaml` and `results_v2/` the
+run with `configs/train_config_v2.yaml`. Four of the nine PNG files there are
+843 bytes each, too small to be a real 512 by 512 sample.
 
-You can run the entire pipeline using the provided `notebook.ipynb` or execute the scripts individually:
+## What is here
+
+- `notebook.ipynb` runs the three stages in order, and its outputs are saved in it.
+- `stage1_demo.py`: stage 1, the base model fails to draw the concept, and the
+  prompt `<cheburashka> plushie` is encoded and saved to `data/prompt_embeds.pt`.
+- `train.py`: stage 2, LoRA adapters of rank 128 on the UNet, trained for 1000
+  steps with Min-SNR weighting (gamma 5.0), TensorBoard logs and a checkpoint every
+  500 steps.
+- `inference.py`: stage 3, four prompts through the base model with the trained
+  adapters loaded.
+- `dataset.py`: `CheburashkaDataset`, the images resized and centre-cropped to 512.
+- `configs/`: two sets of hyperparameters, each value commented with why it was
+  chosen. The scripts read `train_config_v2.yaml` by default.
+- `utils/`: TensorBoard launcher and plotting helpers. `docs/workflow.md`
+  describes the training and inference pipelines with diagrams.
+
+## Running it
+
+This repository ships no program, and nothing in it runs without two things it
+does not contain:
+
+- **The weights.** Every script downloads `runwayml/stable-diffusion-v1-5` from
+  Hugging Face on first use, several gigabytes.
+- **The data.** Training reads its images from `data/cheburashka/`, which is
+  gitignored and in no commit. Put your own images there.
+
+With both, a CUDA GPU with about 10 GB of memory, Python with PyTorch,
+`diffusers`, `transformers`, `peft`, `accelerate`, `torchvision`, `pyyaml` and
+`tensorboard`:
 
 ```bash
-# To train
+python stage1_demo.py
 python train.py
-
-# To generate
 python inference.py
 ```
+
+The repository pins none of these packages.
+
+## Working on it
+
+`.\recipe.ps1` is the whole interface: `.\recipe.ps1 test` runs pytest and ruff
+over `.claude`, and nothing over the scripts above, which would have to download
+the weights first. `.\recipe.ps1 info` prints the metadata. The other verbs print
+`nothing to <verb>`. `CLAUDE.md` holds the rules.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
+
+## Lab requirements
+
+This repository complies with [revision 4.0.0](http://127.0.0.1:3000/igors-lab/software-requirements/src/tag/v4.0.0/BEST_REQUIREMENTS.md) of the lab requirements, except R-02 (#7), R-09 (#8), R-13 (#9), R-37 (#10), R-41 (#11), R-42 (#12).
