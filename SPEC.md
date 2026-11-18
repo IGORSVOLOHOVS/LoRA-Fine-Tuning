@@ -5,6 +5,29 @@ describes behaviour found in the code and cites the code that implements it.
 References to notebook cells use 0-based cell indices. The hub document is
 [docs/README.md](docs/README.md).
 
+<!-- jira-sync:start -->
+Jira: KAN-87
+
+## Tasks
+
+This list is one ticket in Jira project KAN, [KAN-87](https://igorsvolohovs.atlassian.net/browse/KAN-87). Each line is a checkbox there: tick it in Jira and the sync ticks it here; add a checkbox there and it is appended here. Done items are the features described in section 3; open items are what the project declares but the code does not do yet.
+
+- [x] Stage 1: base model demonstration (`stage1_demo.py`) (section 3.1) <!-- spec-stage-1-base-model-demonstration-stage1demo-py -->
+- [x] Dataset (`dataset.py`) (section 3.2) <!-- spec-dataset-dataset-py -->
+- [x] Training (`train.py`) (section 3.3) <!-- spec-training-train-py -->
+- [x] Inference (`inference.py`) (section 3.4) <!-- spec-inference-inference-py -->
+- [x] Utilities (`utils/`) (section 3.5) <!-- spec-utilities-utils -->
+- [x] Notebook (`notebook.ipynb`) (section 3.6) <!-- spec-notebook-notebook-ipynb -->
+- [ ] A fixed seed of 42 makes noise patterns identical between runs (declared, not implemented) <!-- spec-a-fixed-seed-of-42-makes-noise-patterns-identical- -->
+- [ ] `training.gradient_accumulation_steps: 1` (declared, not implemented) <!-- spec-training-gradientaccumulationsteps-1 -->
+- [ ] `model.revision: null` (declared, not implemented) <!-- spec-model-revision-null -->
+- [ ] Prompt embeddings saved "for Stage 2" (declared, not implemented) <!-- spec-prompt-embeddings-saved-for-stage-2 -->
+- [ ] `accelerate` as a requirement (declared, not implemented) <!-- spec-accelerate-as-a-requirement -->
+- [ ] `data/cheburashka` holds three training images (declared, not implemented) <!-- spec-data-cheburashka-holds-three-training-images -->
+- [ ] VRAM stays under 8-10 GB; about 10 GB needed (declared, not implemented) <!-- spec-vram-stays-under-8-10-gb-about-10-gb-needed -->
+
+<!-- jira-sync:end -->
+
 ## 1. Purpose and scope
 
 The project fine-tunes Stable Diffusion v1.5 with LoRA adapters on the UNet so that
